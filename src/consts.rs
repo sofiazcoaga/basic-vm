@@ -1,3 +1,5 @@
+pub const MEMORY_MAX: usize = 1 << 16;
+
 /// OPCODES
 pub const OP_BR: u16 = 0; /* branch */
 pub const OP_ADD: u16 = 1; /* add  */
@@ -17,19 +19,19 @@ pub const OP_LEA: u16 = 14; /* load effective address */
 pub const OP_TRAP: u16 = 15;
 
 /// REGISTERS
-pub const R0: usize = 0;
-pub const R1: usize = 1;
-pub const R2: usize = 2;
-pub const R3: usize = 3;
-pub const R4: usize = 4;
-pub const R5: usize = 5;
-pub const R6: usize = 6;
-pub const R7: usize = 7;
+pub const _R0: usize = 0;
+pub const _R1: usize = 1;
+pub const _R2: usize = 2;
+pub const _R3: usize = 3;
+pub const _R4: usize = 4;
+pub const _R5: usize = 5;
+pub const _R6: usize = 6;
+pub const _R7: usize = 7;
 pub const PC: usize = 8; // Program Counter
 pub const COND: usize = 9;
 pub const REGISTER_COUNT: usize = 10;
 
 /// FLAGS
-pub const FL_POS: u16 = 1 << 0; // Positive
+pub const _FL_POS: u16 = 1 << 0; // Positive
 pub const FL_ZRO: u16 = 1 << 1; // Zero
-pub const FL_NEG: u16 = 1 << 2; // Negative
+pub const _FL_NEG: u16 = 1 << 2; // Negative
