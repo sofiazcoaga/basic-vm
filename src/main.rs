@@ -7,6 +7,8 @@ mod error;
 use crate::flags::Flag;
 use crate::opcodes::Opcode::{self, *};
 use crate::operations::add::handle_add;
+use crate::operations::and::handle_and;
+use crate::operations::not::handle_not;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -53,8 +55,14 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is ADD");
                 handle_add(ix, &mut vm)?;
             }
-            OpAND => println!("Opcode is AND"),
-            OpNOT => println!("Opcode is NOT"),
+            OpAND => {
+                println!("Opcode is AND");
+                handle_and(ix, &mut vm)?;
+            }
+            OpNOT => {
+                println!("Opcode is NOT");
+                handle_not(ix, &mut vm)?;
+            }
             OpBR => println!("Opcode is BR"),
             OpJMP => println!("Opcode is JMP"),
             OpJSR => println!("Opcode is JSR"),
