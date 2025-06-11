@@ -25,7 +25,7 @@ pub fn handle_and(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
 
 #[cfg(test)]
 mod test {
-    use crate::{operations::and::handle_and, registers::Register, VMState};
+    use crate::{VMState, operations::and::handle_and, registers::Register};
 
     #[test]
     fn immediate_mode_and() {
@@ -42,7 +42,6 @@ mod test {
         // 0000 0000 0000 0011
         //  0    0    0   0010 = 2
         assert_eq!(vm.registers[Register::R5.usize()], 2);
-
     }
 
     #[test]
@@ -61,6 +60,5 @@ mod test {
         //  734 0000 0010 1101 1110
         // res  0000 0000 1101 0010 -> 210
         assert_eq!(vm.registers[Register::R0.usize()], 210);
-
     }
 }

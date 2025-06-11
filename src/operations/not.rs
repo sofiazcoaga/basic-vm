@@ -9,8 +9,8 @@ pub fn handle_not(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
 
 #[cfg(test)]
 mod test {
-    use crate::{registers::Register, VMState};
     use super::*;
+    use crate::{VMState, registers::Register};
 
     #[test]
     fn inverts_register_with_not() {
