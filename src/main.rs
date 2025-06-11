@@ -5,13 +5,13 @@ use crate::error::VMError;
 mod error;
 
 use crate::flags::Flag;
-use crate::instructions::handle_add;
 use crate::opcodes::Opcode::{self, *};
+use crate::operations::add::handle_add;
 use crate::registers::Register::{self, *};
 
 mod flags;
-mod instructions;
 mod opcodes;
+mod operations;
 mod registers;
 pub const MEMORY_MAX: usize = 1 << 16;
 
@@ -116,7 +116,7 @@ mod test {
 
     #[test]
     fn writes_ix_to_memory() {
-        let mut memory = [0; MEMORY_MAX];
+        let mut vm = VMState::init().unwrap();
         let origin: u16 = 0x3000;
         let first_ix: u16 = 0x4314;
         let second_ix: u16 = 0x975A;
@@ -126,13 +126,13 @@ mod test {
             second_ix.to_be_bytes(),
         ]
         .concat();
-        write_ixs_to_mem(binary, &mut memory);
+        write_ixs_to_mem(binary, &mut vm);
         assert_eq!(
-            memory[origin as usize],
+            vm.memory[origin as usize],
             u16::from_le_bytes(first_ix.to_be_bytes())
         );
         assert_eq!(
-            memory[(origin + 1) as usize],
+            vm.memory[(origin + 1) as usize],
             u16::from_le_bytes(second_ix.to_be_bytes())
         );
     }
