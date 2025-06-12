@@ -1,5 +1,8 @@
 use crate::{
-    error::VMError, operations::utils::{sign_extend, update_flags}, registers::Register, VMState
+    VMState,
+    error::VMError,
+    operations::utils::{sign_extend, update_flags},
+    registers::Register,
 };
 pub fn handle_lea(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;

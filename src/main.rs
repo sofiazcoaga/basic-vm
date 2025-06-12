@@ -15,6 +15,7 @@ use crate::operations::ldi::handle_ldi;
 use crate::operations::ldr::handle_ldr;
 use crate::operations::lea::handle_lea;
 use crate::operations::not::handle_not;
+use crate::operations::st::handle_st;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -90,8 +91,14 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is LDR");
                 handle_ldr(ix, &mut vm)?;
             }
-            OpLEA => {println!("Opcode is LEA"); handle_lea(ix, &mut vm)?;},
-            OpST => println!("Opcode is ST"),
+            OpLEA => {
+                println!("Opcode is LEA");
+                handle_lea(ix, &mut vm)?;
+            }
+            OpST => {
+                println!("Opcode is ST");
+                handle_st(ix, &mut vm)?;
+            }
             OpSTI => println!("Opcode is STI"),
             OpSTR => println!("Opcode is STR"),
             OpTRAP => println!("Opcode is TRAP"),
