@@ -8,7 +8,10 @@ use crate::{
 pub fn handle_ldi(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);
-    vm.registers[dest_reg] = mem_read(vm.registers[Register::PC.usize()] + pc_offset, vm);
+    vm.registers[dest_reg] = mem_read(
+        vm.registers[Register::PC.usize()].wrapping_add(pc_offset),
+        vm,
+    );
     update_flags(vm, vm.registers[dest_reg])?;
     Ok(())
 }
@@ -23,7 +26,7 @@ mod test {
         let mut vm = VMState::init().unwrap();
         let pc_offset = 0x0007;
         let pc_current_content = vm.registers[Register::PC.usize()];
-        mem_write(pc_current_content + pc_offset, 1000, &mut vm);
+        mem_write(pc_current_content.wrapping_add(pc_offset), 1000, &mut vm);
         // LDI  DestReg PCOffset
         // 1010 001     000000111
         let ldi_ix = 0xA207;
