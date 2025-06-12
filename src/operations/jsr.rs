@@ -9,7 +9,8 @@ pub fn handle_jsr(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     if without_reg_flag {
         // Next ix address is obtained from adding offset to current PC. - JSR
         let pc_offset = sign_extend(instruction & 0x7FF, 11);
-        vm.registers[Register::PC.usize()] += pc_offset;
+        vm.registers[Register::PC.usize()] =
+            vm.registers[Register::PC.usize()].wrapping_add(pc_offset);
     } else {
         // Next ix address is obtained from a specific register - JSRR
         let base_reg = ((instruction >> 6) & 0x7) as usize;
@@ -36,6 +37,17 @@ mod test {
         assert_eq!(vm.registers[Register::PC.usize()], 0x3005);
         // R7 is previous PC value.
         assert_eq!(vm.registers[Register::R7.usize()], 0x3000);
+    }
+
+    #[test]
+    fn executes_jsr_with_negative_offset() {
+        // JSR  FromOffset  Complement of -20 // we want to move the PC backwards
+        // 0100 1           11111101100
+        let jsr_ix = 0x4FEC;
+        let mut vm = VMState::init().unwrap();
+        let pc_previous_value = vm.registers[Register::PC.usize()];
+        let _ = handle_jsr(jsr_ix, &mut vm);
+        assert_eq!(vm.registers[Register::PC.usize()], pc_previous_value - 20);
     }
 
     #[test]
