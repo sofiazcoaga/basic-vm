@@ -16,6 +16,7 @@ use crate::operations::ldr::handle_ldr;
 use crate::operations::lea::handle_lea;
 use crate::operations::not::handle_not;
 use crate::operations::st::handle_st;
+use crate::operations::sti::handle_sti;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -99,7 +100,10 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is ST");
                 handle_st(ix, &mut vm)?;
             }
-            OpSTI => println!("Opcode is STI"),
+            OpSTI => {
+                println!("Opcode is STI");
+                handle_sti(ix, &mut vm)?;
+            }
             OpSTR => println!("Opcode is STR"),
             OpTRAP => println!("Opcode is TRAP"),
             OpRES => println!("Opcode is RES"),

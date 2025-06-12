@@ -8,4 +8,5 @@ pub mod ldr;
 pub mod lea;
 pub mod not;
 pub mod st;
+pub mod sti;
 pub mod utils;
