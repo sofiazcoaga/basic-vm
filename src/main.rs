@@ -8,6 +8,7 @@ use crate::flags::Flag;
 use crate::opcodes::Opcode::{self, *};
 use crate::operations::add::handle_add;
 use crate::operations::and::handle_and;
+use crate::operations::br::handle_br;
 use crate::operations::jmp::handle_jmp;
 use crate::operations::jsr::handle_jsr;
 use crate::operations::ld::handle_ld;
@@ -17,6 +18,7 @@ use crate::operations::lea::handle_lea;
 use crate::operations::not::handle_not;
 use crate::operations::st::handle_st;
 use crate::operations::sti::handle_sti;
+use crate::operations::str::handle_str;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -71,7 +73,10 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is NOT");
                 handle_not(ix, &mut vm)?;
             }
-            OpBR => println!("Opcode is BR"),
+            OpBR => {
+                println!("Opcode is BR");
+                handle_br(ix, &mut vm)?;
+            }
             OpJMP => {
                 println!("Opcode is JMP");
                 handle_jmp(ix, &mut vm)?;
@@ -104,7 +109,10 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is STI");
                 handle_sti(ix, &mut vm)?;
             }
-            OpSTR => println!("Opcode is STR"),
+            OpSTR => {
+                println!("Opcode is STR");
+                handle_str(ix, &mut vm)?;
+            }
             OpTRAP => println!("Opcode is TRAP"),
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),

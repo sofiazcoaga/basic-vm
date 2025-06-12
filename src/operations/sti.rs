@@ -15,11 +15,7 @@ pub fn handle_sti(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
 
 #[cfg(test)]
 mod test {
-    use crate::{
-        VMState, mem_read, mem_write,
-        operations::{st::handle_st, sti::handle_sti},
-        registers::Register,
-    };
+    use crate::{VMState, mem_read, mem_write, operations::sti::handle_sti, registers::Register};
 
     #[test]
     fn stores_reg_value_in_memory() {
