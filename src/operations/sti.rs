@@ -1,8 +1,5 @@
 use crate::{
-    VMState,
-    error::VMError,
-    mem_read, mem_write,
-    operations::{add, utils::sign_extend},
+    VMState, error::VMError, mem_read, mem_write, operations::utils::sign_extend,
     registers::Register,
 };
 pub fn handle_sti(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
