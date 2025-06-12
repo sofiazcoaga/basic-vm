@@ -20,7 +20,8 @@ mod test {
         vm.registers[Register::R1.usize()] = 0x3100;
         let res = handle_jmp(jmp_ix, &mut vm);
         assert!(res.is_ok());
-        assert_eq!(vm.registers[Register::PC.usize()], 0x3100); 
+        assert_eq!(vm.registers[Register::PC.usize()], 0x3100);
     }
+
 
 }
