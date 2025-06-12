@@ -16,7 +16,7 @@ pub fn handle_ldi(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{mem_write, VMState};
+    use crate::{VMState, mem_write};
 
     #[test]
     fn loads_register() {
@@ -29,6 +29,6 @@ mod test {
         let ldi_ix = 0xA207;
         let res = handle_ldi(ldi_ix, &mut vm);
         assert!(res.is_ok());
-        assert_eq!(vm.registers[Register::R1.usize()], 1000); 
+        assert_eq!(vm.registers[Register::R1.usize()], 1000);
     }
 }
