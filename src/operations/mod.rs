@@ -11,4 +11,5 @@ pub mod not;
 pub mod st;
 pub mod sti;
 pub mod str;
+pub mod trap;
 pub mod utils;

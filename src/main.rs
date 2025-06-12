@@ -19,6 +19,7 @@ use crate::operations::not::handle_not;
 use crate::operations::st::handle_st;
 use crate::operations::sti::handle_sti;
 use crate::operations::str::handle_str;
+use crate::operations::trap::handle_trap;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -113,12 +114,13 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is STR");
                 handle_str(ix, &mut vm)?;
             }
-            OpTRAP => println!("Opcode is TRAP"),
+            OpTRAP => {
+                println!("Opcode is TRAP");
+                handle_trap(ix, &mut vm, &mut running)?;
+            }
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
-
-        running = false; // Temporarily until opcodes are filled.
     }
 
     Ok(())
