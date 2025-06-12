@@ -7,3 +7,4 @@ pub mod ldi;
 pub mod ldr;
 pub mod not;
 pub mod utils;
+pub mod lea;
