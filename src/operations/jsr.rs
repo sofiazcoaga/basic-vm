@@ -20,7 +20,7 @@ pub fn handle_jsr(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
 
 #[cfg(test)]
 mod test {
-    use crate::{operations::jsr::handle_jsr, registers::Register, VMState};
+    use crate::{VMState, operations::jsr::handle_jsr, registers::Register};
 
     #[test]
     fn executes_jsr() {

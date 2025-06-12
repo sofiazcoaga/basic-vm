@@ -5,7 +5,6 @@ pub fn handle_jmp(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     Ok(())
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -22,6 +21,4 @@ mod test {
         assert!(res.is_ok());
         assert_eq!(vm.registers[Register::PC.usize()], 0x3100);
     }
-
-
 }
