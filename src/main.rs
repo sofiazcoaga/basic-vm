@@ -12,6 +12,7 @@ use crate::operations::jmp::handle_jmp;
 use crate::operations::jsr::handle_jsr;
 use crate::operations::ld::handle_ld;
 use crate::operations::ldi::handle_ldi;
+use crate::operations::ldr::handle_ldr;
 use crate::operations::not::handle_not;
 use crate::registers::Register::{self, *};
 
@@ -84,7 +85,10 @@ fn main() -> Result<(), VMError> {
                 println!("Opcode is LDI");
                 handle_ldi(ix, &mut vm)?;
             }
-            OpLDR => println!("Opcode is LDR"),
+            OpLDR => {
+                println!("Opcode is LDR");
+                handle_ldr(ix, &mut vm)?;
+            }
             OpLEA => println!("Opcode is LEA"),
             OpST => println!("Opcode is ST"),
             OpSTI => println!("Opcode is STI"),
