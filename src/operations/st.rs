@@ -28,7 +28,10 @@ mod test {
         // ST   src_reg pc_offset
         // 0011 011     000001010
         let st_ix = 0x360A;
-        assert_eq!(mem_read(pc_content.wrapping_add(pc_offset), &mut vm).unwrap(), 0); // Memory Address is empty
+        assert_eq!(
+            mem_read(pc_content.wrapping_add(pc_offset), &mut vm).unwrap(),
+            0
+        ); // Memory Address is empty
         let res = handle_st(st_ix, &mut vm);
         assert!(res.is_ok());
         assert_eq!(
