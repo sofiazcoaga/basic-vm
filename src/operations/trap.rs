@@ -1,4 +1,4 @@
-use std::io::{Read, Write};
+use std::io::Read;
 
 use crate::{
     VMState, error::VMError, mem_read, operations::utils::update_flags, registers::Register,
@@ -57,14 +57,13 @@ fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
         .read_exact(&mut char)
         .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
     vm.registers[Register::R0.usize()] = char[0] as u16;
+    update_flags(vm, vm.registers[Register::R0.usize()])?;
     Ok(())
 }
 
 fn handle_out(vm: &mut VMState) -> Result<(), VMError> {
-    print!(
-        "{:?}",
-        vm.registers[Register::R0.usize()].to_le_bytes()[0] as char
-    );
+    let char = vm.registers[Register::R0.usize()].to_le_bytes()[0];
+    print_char(char);
     Ok(())
 }
 
@@ -73,8 +72,10 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
     let mut content = mem_read(memory_address, vm);
     while content != 0 {
         let bytes: [u8; 2] = content.to_le_bytes();
-        print!("{:?}", bytes[0] as char);
-        print!("{:?}", bytes[1] as char);
+        print_char(bytes[0]);
+        if bytes[1] != b'\0' {
+            print_char(bytes[1]);
+        }
         memory_address = memory_address.wrapping_add(1);
         content = mem_read(memory_address, vm);
     }
@@ -82,12 +83,11 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
 }
 
 fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
-    println!("Enter a character: ");
+    print!("\n\rEnter a character: \n\r");
     let mut char = [0];
     std::io::stdin()
         .read_exact(&mut char)
         .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
-    print!("{:?}", char[0] as char);
     vm.registers[Register::R0.usize()] = char[0] as u16;
     update_flags(vm, vm.registers[Register::R0.usize()])?;
     Ok(())
@@ -97,11 +97,19 @@ fn handle_puts(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
     let mut content = mem_read(memory_address, vm);
     while content != 0 {
-        print!("{:?}", content.to_string());
+        print_char(content.to_le_bytes()[0]);
         memory_address = memory_address.wrapping_add(1);
         content = mem_read(memory_address, vm);
     }
     Ok(())
+}
+
+fn print_char(char: u8) {
+    if char == 0x0A {
+        print!("\n\r");
+    } else {
+        print!("{}", char as char);
+    }
 }
 
 #[cfg(test)]
@@ -113,23 +121,4 @@ mod test {
         operations::trap::{handle_out, handle_putsp},
         registers::Register,
     };
-
-    #[test]
-    fn probando() {
-        let mut char = [0];
-
-        std::io::stdin().read_exact(&mut char);
-        let value = char[0] as u16;
-        println!("big endian {:?}", value.to_be_bytes());
-        println!("little endian: {:?}", value.to_le_bytes());
-        // let t: u16 = 116;
-        // let mut vm = VMState::init().unwrap();
-        // let mut mem_addr = 0x3000;
-        // vm.registers[Register::R0.usize()] = mem_addr;
-        // mem_write(mem_addr, u16::from_le_bytes([72, 79]), &mut vm);
-        // mem_addr +=1;
-        // mem_write(mem_addr, u16::from_le_bytes([76, 65]), &mut vm);
-
-        // handle_putsp(&mut vm);
-    }
 }
