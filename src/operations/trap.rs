@@ -1,4 +1,6 @@
-use crate::{error::VMError, operations::utils::update_flags, registers::Register, utils::get_char, VMState};
+use crate::{
+    VMState, error::VMError, operations::utils::update_flags, registers::Register, utils::get_char,
+};
 pub fn handle_trap(instruction: u16, vm: &mut VMState, running: &mut bool) -> Result<(), VMError> {
     match TrapCode::try_from(instruction & 0xFF)? {
         TrapCode::Getc => handle_getc(vm)?,
@@ -76,7 +78,7 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
 
 fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
     print!("\n\rEnter a character: \n\r");
-    let  char = get_char()?;
+    let char = get_char()?;
     vm.registers[Register::R0.usize()] = char;
     update_flags(vm, char)?;
     Ok(())

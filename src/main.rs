@@ -2,13 +2,14 @@ use std::env;
 use std::io::Write;
 
 mod error;
-mod utils;
 mod flags;
 mod opcodes;
 mod operations;
 mod registers;
+mod utils;
 mod vm;
 
+use crate::error::VMError;
 use crate::opcodes::Opcode::{self, *};
 use crate::operations::add::handle_add;
 use crate::operations::and::handle_and;
@@ -27,7 +28,6 @@ use crate::operations::trap::handle_trap;
 use crate::registers::Register::*;
 use crate::utils::{disable_input_buffering, read_file};
 use crate::vm::VMState;
-use crate::error::VMError;
 
 fn main() -> Result<(), VMError> {
     let console_args: Vec<_> = env::args().collect();
