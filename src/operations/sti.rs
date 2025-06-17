@@ -8,7 +8,7 @@ pub fn handle_sti(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let address = mem_read(
         vm.registers[Register::PC.usize()].wrapping_add(pc_offset),
         vm,
-    );
+    )?;
     mem_write(address, vm.registers[src_reg], vm);
     Ok(())
 }
@@ -33,14 +33,14 @@ mod test {
             random_content,
             &mut vm,
         );
-        assert_eq!(mem_read(random_content, &vm), 0); // The memory in this address should have no content yet.
+        assert_eq!(mem_read(random_content, &mut vm).unwrap(), 0); // The memory in this address should have no content yet.
 
         let res = handle_sti(sti_ix, &mut vm);
         assert!(res.is_ok());
         // The memory address 0x1234 should have the same content as R1
         assert_eq!(
-            mem_read(random_content, &vm),
-            mem_read(vm.registers[Register::R1.usize()], &vm)
+            mem_read(random_content, &mut vm).unwrap(),
+            mem_read(vm.registers[Register::R1.usize()], &mut vm).unwrap()
         );
     }
 }
