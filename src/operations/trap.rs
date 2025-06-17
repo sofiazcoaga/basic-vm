@@ -111,14 +111,3 @@ fn print_char(char: u8) {
         print!("{}", char as char);
     }
 }
-
-#[cfg(test)]
-mod test {
-    use std::io::Read;
-
-    use crate::{
-        VMState, mem_write,
-        operations::trap::{handle_out, handle_putsp},
-        registers::Register,
-    };
-}
