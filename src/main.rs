@@ -126,7 +126,7 @@ fn write_ixs_to_mem(parsed_file: Vec<u8>, vm: &mut VMState) {
 
     let mut offset = origin;
     while file_index + 1 < parsed_file.len() {
-        // LC3 binaries come in big endian 
+        // LC3 binaries come in big endian
         let content = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
         mem_write(offset, content, vm);
         file_index += 2;
@@ -157,18 +157,7 @@ mod test {
         ]
         .concat();
         write_ixs_to_mem(binary, &mut vm);
-<<<<<<< HEAD
-        assert_eq!(
-            vm.memory[origin as usize],
-            first_ix
-        );
-        assert_eq!(
-            vm.memory[(origin + 1) as usize],
-            second_ix
-        );
-=======
         assert_eq!(vm.memory[origin as usize], first_ix);
         assert_eq!(vm.memory[(origin + 1) as usize], second_ix);
->>>>>>> dev
     }
 }
