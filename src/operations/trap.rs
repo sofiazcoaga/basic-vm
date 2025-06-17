@@ -17,7 +17,6 @@ pub fn handle_trap(instruction: u16, vm: &mut VMState, running: &mut bool) -> Re
     }
     Ok(())
 }
-
 enum TrapCode {
     Getc = 0x20,  /* get character from keyboard, not echoed onto the terminal */
     Out = 0x21,   /* output a character */
@@ -58,6 +57,7 @@ fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
         .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
     vm.registers[Register::R0.usize()] = char[0] as u16;
     update_flags(vm, vm.registers[Register::R0.usize()])?;
+
     Ok(())
 }
 
