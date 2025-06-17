@@ -156,11 +156,11 @@ mod test {
         write_ixs_to_mem(binary, &mut vm);
         assert_eq!(
             vm.memory[origin as usize],
-            u16::from_le_bytes(first_ix.to_be_bytes())
+            first_ix
         );
         assert_eq!(
             vm.memory[(origin + 1) as usize],
-            u16::from_le_bytes(second_ix.to_be_bytes())
+            second_ix
         );
     }
 }
