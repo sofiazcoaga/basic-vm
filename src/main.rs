@@ -1,5 +1,6 @@
+use std::env;
 use std::fs::{self};
-use std::io::Read;
+use std::io::{Read, Write};
 
 use termion::raw::IntoRawMode;
 
@@ -49,13 +50,18 @@ impl VMState {
 }
 
 fn main() -> Result<(), VMError> {
+    let console_args: Vec<_> = env::args().collect();
+    if console_args.len() != 2 {
+        return Err(VMError::WrongArgumentsLen);
+    }
+    let path = console_args[1].clone();
     // Fill memory with instructions here
-    let example_file = read_file("./binary-examples/rogue.obj")?;
-    let mut _stdout = std::io::stdout().into_raw_mode().unwrap();
+    let file = read_file(&path)?;
+    let mut stdout = std::io::stdout().into_raw_mode().unwrap();
     // Initialize VM state
     let mut vm = VMState::init()?;
 
-    write_ixs_to_mem(example_file, &mut vm);
+    write_ixs_to_mem(file, &mut vm);
 
     let mut running = true;
 
@@ -83,6 +89,7 @@ fn main() -> Result<(), VMError> {
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
+        stdout.flush().map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?; 
     }
 
     Ok(())
