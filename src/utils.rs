@@ -19,10 +19,17 @@ pub fn get_char() -> Result<u16, VMError> {
     Ok(char)
 }
 
-pub fn disable_input_buffering() -> Result<(), VMError> {
+pub fn disable_input_buffering() -> Result<Termios, VMError> {
     let fd = std::io::stdin().lock().as_raw_fd();
     let mut termios = Termios::from_fd(fd).map_err(|e| VMError::TermiosError(e.to_string()))?;
+    let original_setup = termios;
     termios.c_lflag &= !ICANON & !ECHO;
+    tcsetattr(fd, TCSANOW, &termios).unwrap();
+    Ok(original_setup)
+}
+
+pub fn restore_terminal(termios: Termios) -> Result<(), VMError> {
+    let fd = std::io::stdin().lock().as_raw_fd();
     tcsetattr(fd, TCSANOW, &termios).unwrap();
     Ok(())
 }
