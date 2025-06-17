@@ -1,5 +1,7 @@
 use std::fs::{self};
 
+use termion::raw::IntoRawMode;
+
 use crate::error::VMError;
 
 mod error;
@@ -8,6 +10,7 @@ use crate::flags::Flag;
 use crate::opcodes::Opcode::{self, *};
 use crate::operations::add::handle_add;
 use crate::operations::and::handle_and;
+use crate::operations::br::handle_br;
 use crate::operations::jmp::handle_jmp;
 use crate::operations::jsr::handle_jsr;
 use crate::operations::ld::handle_ld;
@@ -17,6 +20,8 @@ use crate::operations::lea::handle_lea;
 use crate::operations::not::handle_not;
 use crate::operations::st::handle_st;
 use crate::operations::sti::handle_sti;
+use crate::operations::str::handle_str;
+use crate::operations::trap::handle_trap;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -43,8 +48,8 @@ impl VMState {
 
 fn main() -> Result<(), VMError> {
     // Fill memory with instructions here
-    let example_file = read_file("./binary-examples/2048.obj")?;
-
+    let example_file = read_file("./binary-examples/rogue.obj")?;
+    let mut _stdout = std::io::stdout().into_raw_mode().unwrap();
     // Initialize VM state
     let mut vm = VMState::init()?;
 
@@ -59,58 +64,23 @@ fn main() -> Result<(), VMError> {
         let opcode = Opcode::try_from(ix >> 12)?;
 
         match opcode {
-            OpADD => {
-                println!("Opcode is ADD");
-                handle_add(ix, &mut vm)?;
-            }
-            OpAND => {
-                println!("Opcode is AND");
-                handle_and(ix, &mut vm)?;
-            }
-            OpNOT => {
-                println!("Opcode is NOT");
-                handle_not(ix, &mut vm)?;
-            }
-            OpBR => println!("Opcode is BR"),
-            OpJMP => {
-                println!("Opcode is JMP");
-                handle_jmp(ix, &mut vm)?;
-            }
-            OpJSR => {
-                println!("Opcode is JSR");
-                handle_jsr(ix, &mut vm)?;
-            }
-            OpLD => {
-                println!("Opcode is LD");
-                handle_ld(ix, &mut vm)?;
-            }
-            OpLDI => {
-                println!("Opcode is LDI");
-                handle_ldi(ix, &mut vm)?;
-            }
-            OpLDR => {
-                println!("Opcode is LDR");
-                handle_ldr(ix, &mut vm)?;
-            }
-            OpLEA => {
-                println!("Opcode is LEA");
-                handle_lea(ix, &mut vm)?;
-            }
-            OpST => {
-                println!("Opcode is ST");
-                handle_st(ix, &mut vm)?;
-            }
-            OpSTI => {
-                println!("Opcode is STI");
-                handle_sti(ix, &mut vm)?;
-            }
-            OpSTR => println!("Opcode is STR"),
-            OpTRAP => println!("Opcode is TRAP"),
+            OpADD => handle_add(ix, &mut vm)?,
+            OpAND => handle_and(ix, &mut vm)?,
+            OpNOT => handle_not(ix, &mut vm)?,
+            OpBR => handle_br(ix, &mut vm)?,
+            OpJMP => handle_jmp(ix, &mut vm)?,
+            OpJSR => handle_jsr(ix, &mut vm)?,
+            OpLD => handle_ld(ix, &mut vm)?,
+            OpLDI => handle_ldi(ix, &mut vm)?,
+            OpLDR => handle_ldr(ix, &mut vm)?,
+            OpLEA => handle_lea(ix, &mut vm)?,
+            OpST => handle_st(ix, &mut vm)?,
+            OpSTI => handle_sti(ix, &mut vm)?,
+            OpSTR => handle_str(ix, &mut vm)?,
+            OpTRAP => handle_trap(ix, &mut vm, &mut running)?,
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
-
-        running = false; // Temporarily until opcodes are filled.
     }
 
     Ok(())
@@ -137,7 +107,7 @@ fn write_ixs_to_mem(parsed_file: Vec<u8>, vm: &mut VMState) {
     let mut offset = origin;
     while file_index + 1 < parsed_file.len() {
         // LC3 binaries come in big endian but we need to store it swapped
-        let content = u16::from_le_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
+        let content = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
         mem_write(offset, content, vm);
         file_index += 2;
         offset += 1;
@@ -167,13 +137,7 @@ mod test {
         ]
         .concat();
         write_ixs_to_mem(binary, &mut vm);
-        assert_eq!(
-            vm.memory[origin as usize],
-            u16::from_le_bytes(first_ix.to_be_bytes())
-        );
-        assert_eq!(
-            vm.memory[(origin + 1) as usize],
-            u16::from_le_bytes(second_ix.to_be_bytes())
-        );
+        assert_eq!(vm.memory[origin as usize], first_ix);
+        assert_eq!(vm.memory[(origin + 1) as usize], second_ix);
     }
 }
