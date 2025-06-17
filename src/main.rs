@@ -49,7 +49,7 @@ impl VMState {
 fn main() -> Result<(), VMError> {
     // Fill memory with instructions here
     let example_file = read_file("./binary-examples/rogue.obj")?;
-    let mut stdout = std::io::stdout().into_raw_mode().unwrap();
+    let mut _stdout = std::io::stdout().into_raw_mode().unwrap();
     // Initialize VM state
     let mut vm = VMState::init()?;
 
