@@ -89,20 +89,20 @@ fn main() -> Result<(), VMError> {
 }
 
 fn mem_read(address: u16, vm: &mut VMState) -> Result<u16, VMError> {
-    if address == MemoryRegister::KBSR.try_into()? {
+    if address == MemoryRegister::Kbsr.try_into()? {
         let char = get_char()?;
         if char != 0 {
-            vm.memory[MemoryRegister::KBSR.usize()] = 1 << 15;
-            vm.memory[MemoryRegister::KBDR.usize()] = char;
+            vm.memory[MemoryRegister::Kbsr.usize()] = 1 << 15;
+            vm.memory[MemoryRegister::Kbdr.usize()] = char;
         } else {
-            vm.memory[MemoryRegister::KBSR.usize()] = 0;
+            vm.memory[MemoryRegister::Kbsr.usize()] = 0;
         }
     }
     Ok(vm.memory[address as usize])
 }
 
 fn get_char() -> Result<u16, VMError> {
-    let mut buffer: [u8;1] = [0];
+    let mut buffer: [u8; 1] = [0];
     std::io::stdin()
         .read_exact(&mut buffer)
         .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
