@@ -124,8 +124,7 @@ fn write_ixs_to_mem(parsed_file: Vec<u8>, vm: &mut VMState) {
 
     let mut offset = origin;
     while file_index + 1 < parsed_file.len() {
-        // LC3 binaries come in big endian but we need to store it swapped
-        let content = u16::from_le_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
+        let content = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
         mem_write(offset, content, vm);
         file_index += 2;
         offset += 1;
