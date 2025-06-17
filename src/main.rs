@@ -62,62 +62,20 @@ fn main() -> Result<(), VMError> {
         let opcode = Opcode::try_from(ix >> 12)?;
 
         match opcode {
-            OpADD => {
-                println!("Opcode is ADD");
-                handle_add(ix, &mut vm)?;
-            }
-            OpAND => {
-                println!("Opcode is AND");
-                handle_and(ix, &mut vm)?;
-            }
-            OpNOT => {
-                println!("Opcode is NOT");
-                handle_not(ix, &mut vm)?;
-            }
-            OpBR => {
-                println!("Opcode is BR");
-                handle_br(ix, &mut vm)?;
-            }
-            OpJMP => {
-                println!("Opcode is JMP");
-                handle_jmp(ix, &mut vm)?;
-            }
-            OpJSR => {
-                println!("Opcode is JSR");
-                handle_jsr(ix, &mut vm)?;
-            }
-            OpLD => {
-                println!("Opcode is LD");
-                handle_ld(ix, &mut vm)?;
-            }
-            OpLDI => {
-                println!("Opcode is LDI");
-                handle_ldi(ix, &mut vm)?;
-            }
-            OpLDR => {
-                println!("Opcode is LDR");
-                handle_ldr(ix, &mut vm)?;
-            }
-            OpLEA => {
-                println!("Opcode is LEA");
-                handle_lea(ix, &mut vm)?;
-            }
-            OpST => {
-                println!("Opcode is ST");
-                handle_st(ix, &mut vm)?;
-            }
-            OpSTI => {
-                println!("Opcode is STI");
-                handle_sti(ix, &mut vm)?;
-            }
-            OpSTR => {
-                println!("Opcode is STR");
-                handle_str(ix, &mut vm)?;
-            }
-            OpTRAP => {
-                println!("Opcode is TRAP");
-                handle_trap(ix, &mut vm, &mut running)?;
-            }
+            OpADD => handle_add(ix, &mut vm)?,
+            OpAND => handle_and(ix, &mut vm)?,
+            OpNOT => handle_not(ix, &mut vm)?,
+            OpBR => handle_br(ix, &mut vm)?,
+            OpJMP => handle_jmp(ix, &mut vm)?,
+            OpJSR => handle_jsr(ix, &mut vm)?,
+            OpLD => handle_ld(ix, &mut vm)?,
+            OpLDI => handle_ldi(ix, &mut vm)?,
+            OpLDR => handle_ldr(ix, &mut vm)?,
+            OpLEA => handle_lea(ix, &mut vm)?,
+            OpST => handle_st(ix, &mut vm)?,
+            OpSTI => handle_sti(ix, &mut vm)?,
+            OpSTR => handle_str(ix, &mut vm)?,
+            OpTRAP => handle_trap(ix, &mut vm, &mut running)?,
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
