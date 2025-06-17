@@ -91,7 +91,9 @@ fn main() -> Result<(), VMError> {
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
-        std::io::stdout().flush().map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
+        std::io::stdout()
+            .flush()
+            .map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
     }
 
     Ok(())

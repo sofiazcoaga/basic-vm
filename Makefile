@@ -7,9 +7,8 @@ build:
 clean:
 	cargo clean
 
-# For now until it takes CLI arguments
 run:
-	cargo run
+	cargo run -- $(path)
 
 doc:
 	cargo doc --open --no-deps
