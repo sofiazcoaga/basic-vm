@@ -11,7 +11,7 @@ pub fn handle_ld(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     vm.registers[dest_reg] = mem_read(
         vm.registers[Register::PC.usize()].wrapping_add(pc_offset),
         vm,
-    );
+    )?;
     update_flags(vm, vm.registers[dest_reg])?;
     Ok(())
 }

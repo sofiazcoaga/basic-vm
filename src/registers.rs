@@ -1,3 +1,5 @@
+use crate::error::VMError;
+
 #[allow(dead_code)]
 pub enum Register {
     R0 = 0,
@@ -14,6 +16,23 @@ pub enum Register {
 impl Register {
     pub const COUNT: usize = 10;
 
+    pub fn usize(self) -> usize {
+        self as usize
+    }
+}
+pub enum MemoryRegister {
+    Kbsr = 0xFE00, /* keyboard status */
+    Kbdr = 0xFE02, /* keyboard data */
+}
+
+impl TryInto<u16> for MemoryRegister {
+    type Error = VMError;
+    fn try_into(self) -> Result<u16, Self::Error> {
+        Ok(self as u16)
+    }
+}
+
+impl MemoryRegister {
     pub fn usize(self) -> usize {
         self as usize
     }
