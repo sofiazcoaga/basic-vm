@@ -1,7 +1,5 @@
-use std::io::Read;
-
 use crate::{
-    VMState, error::VMError, mem_read, operations::utils::update_flags, registers::Register,
+    VMState, error::VMError, operations::utils::update_flags, registers::Register, utils::get_char,
 };
 pub fn handle_trap(instruction: u16, vm: &mut VMState, running: &mut bool) -> Result<(), VMError> {
     match TrapCode::try_from(instruction & 0xFF)? {
@@ -51,13 +49,9 @@ impl TryFrom<u16> for TrapCode {
 }
 
 fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
-    let mut char = [0];
-    std::io::stdin()
-        .read_exact(&mut char)
-        .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
-    vm.registers[Register::R0.usize()] = char[0] as u16;
-    update_flags(vm, vm.registers[Register::R0.usize()])?;
-
+    let char = get_char()?;
+    vm.registers[Register::R0.usize()] = char;
+    update_flags(vm, char)?;
     Ok(())
 }
 
@@ -69,7 +63,7 @@ fn handle_out(vm: &mut VMState) -> Result<(), VMError> {
 
 fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
-    let mut content = mem_read(memory_address, vm)?;
+    let mut content = vm.mem_read(memory_address)?;
     while content != 0 {
         let bytes: [u8; 2] = content.to_le_bytes();
         print_char(bytes[0]);
@@ -77,29 +71,26 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
             print_char(bytes[1]);
         }
         memory_address = memory_address.wrapping_add(1);
-        content = mem_read(memory_address, vm)?;
+        content = vm.mem_read(memory_address)?;
     }
     Ok(())
 }
 
 fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
     print!("\n\rEnter a character: \n\r");
-    let mut char = [0];
-    std::io::stdin()
-        .read_exact(&mut char)
-        .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
-    vm.registers[Register::R0.usize()] = char[0] as u16;
-    update_flags(vm, vm.registers[Register::R0.usize()])?;
+    let char = get_char()?;
+    vm.registers[Register::R0.usize()] = char;
+    update_flags(vm, char)?;
     Ok(())
 }
 
 fn handle_puts(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
-    let mut content = mem_read(memory_address, vm)?;
+    let mut content = vm.mem_read(memory_address)?;
     while content != 0 {
         print_char(content.to_le_bytes()[0]);
         memory_address = memory_address.wrapping_add(1);
-        content = mem_read(memory_address, vm)?;
+        content = vm.mem_read(memory_address)?;
     }
     Ok(())
 }

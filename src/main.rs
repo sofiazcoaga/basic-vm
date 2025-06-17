@@ -1,15 +1,15 @@
 use std::env;
-use std::fs::{self};
-use std::io::{Read, Write};
-use std::os::fd::AsRawFd;
-
-use termios::{ECHO, ICANON, TCSANOW, Termios, tcsetattr};
-
-use crate::error::VMError;
+use std::io::Write;
 
 mod error;
+mod flags;
+mod opcodes;
+mod operations;
+mod registers;
+mod utils;
+mod vm;
 
-use crate::flags::Flag;
+use crate::error::VMError;
 use crate::opcodes::Opcode::{self, *};
 use crate::operations::add::handle_add;
 use crate::operations::and::handle_and;
@@ -25,30 +25,9 @@ use crate::operations::st::handle_st;
 use crate::operations::sti::handle_sti;
 use crate::operations::str::handle_str;
 use crate::operations::trap::handle_trap;
-use crate::registers::MemoryRegister;
-use crate::registers::Register::{self, *};
-
-mod flags;
-mod opcodes;
-mod operations;
-mod registers;
-pub const MEMORY_MAX: usize = 1 << 16;
-
-pub struct VMState {
-    pub memory: [u16; MEMORY_MAX],
-    pub registers: [u16; Register::COUNT],
-}
-impl VMState {
-    pub fn init() -> Result<Self, VMError> {
-        let mut vm = Self {
-            memory: [0; MEMORY_MAX],
-            registers: [0; Register::COUNT],
-        };
-        vm.registers[Cond.usize()] = Flag::Zro.try_into()?;
-        vm.registers[PC.usize()] = 0x3000; // Set PC to starting position. 0x3000 is the default.
-        Ok(vm)
-    }
-}
+use crate::registers::Register::*;
+use crate::utils::{disable_input_buffering, read_file};
+use crate::vm::VMState;
 
 fn main() -> Result<(), VMError> {
     let console_args: Vec<_> = env::args().collect();
@@ -56,20 +35,19 @@ fn main() -> Result<(), VMError> {
         return Err(VMError::WrongArgumentsLen);
     }
     let path = console_args[1].clone();
-    // Fill memory with instructions here
     let file = read_file(&path)?;
 
     disable_input_buffering()?;
     // Initialize VM state
     let mut vm = VMState::init()?;
 
-    write_ixs_to_mem(file, &mut vm);
+    vm.write_ixs_to_mem(file);
 
     let mut running = true;
 
     while running {
         // Get the next instruction
-        let ix: u16 = mem_read(vm.registers[PC.usize()], &mut vm)?;
+        let ix: u16 = vm.mem_read(vm.registers[PC.usize()])?;
         vm.registers[PC.usize()] += 1;
         let opcode = Opcode::try_from(ix >> 12)?;
 
@@ -97,87 +75,4 @@ fn main() -> Result<(), VMError> {
     }
 
     Ok(())
-}
-
-fn disable_input_buffering() -> Result<(), VMError> {
-    let fd = std::io::stdin().lock().as_raw_fd();
-    let mut termios = Termios::from_fd(fd).map_err(|e| VMError::TermiosError(e.to_string()))?;
-    termios.c_lflag &= !ICANON & !ECHO;
-    tcsetattr(fd, TCSANOW, &termios).unwrap();
-    Ok(())
-}
-
-fn mem_read(address: u16, vm: &mut VMState) -> Result<u16, VMError> {
-    if address == MemoryRegister::Kbsr.try_into()? {
-        let char = get_char()?;
-        if char != 0 {
-            vm.memory[MemoryRegister::Kbsr.usize()] = 1 << 15;
-            vm.memory[MemoryRegister::Kbdr.usize()] = char;
-        } else {
-            vm.memory[MemoryRegister::Kbsr.usize()] = 0;
-        }
-    }
-    Ok(vm.memory[address as usize])
-}
-
-fn get_char() -> Result<u16, VMError> {
-    let mut buffer: [u8; 1] = [0];
-    std::io::stdin()
-        .read_exact(&mut buffer)
-        .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
-    let char = buffer[0] as u16;
-
-    Ok(char)
-}
-
-fn mem_write(address: u16, val: u16, vm: &mut VMState) {
-    vm.memory[address as usize] = val;
-}
-
-fn read_file(path: &str) -> Result<Vec<u8>, VMError> {
-    let read_result = fs::read(path).map_err(|e| VMError::CouldNotReadFile(e.to_string()))?;
-    Ok(read_result)
-}
-
-fn write_ixs_to_mem(parsed_file: Vec<u8>, vm: &mut VMState) {
-    let mut file_index = 0;
-    let origin = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
-    file_index += 2;
-
-    let mut offset = origin;
-    while file_index + 1 < parsed_file.len() {
-        // LC3 binaries come in big endian but we need to store it swapped
-        let content = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
-        mem_write(offset, content, vm);
-        file_index += 2;
-        offset += 1;
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    #[test]
-    fn parse_file() {
-        let path = "./binary-examples/2048.obj";
-        let read_file = read_file(path).unwrap();
-        assert_eq!(read_file.len(), 2276);
-    }
-
-    #[test]
-    fn writes_ix_to_memory() {
-        let mut vm = VMState::init().unwrap();
-        let origin: u16 = 0x3000;
-        let first_ix: u16 = 0x4314;
-        let second_ix: u16 = 0x975A;
-        let binary = vec![
-            origin.to_be_bytes(),
-            first_ix.to_be_bytes(),
-            second_ix.to_be_bytes(),
-        ]
-        .concat();
-        write_ixs_to_mem(binary, &mut vm);
-        assert_eq!(vm.memory[origin as usize], first_ix);
-        assert_eq!(vm.memory[(origin + 1) as usize], second_ix);
-    }
 }

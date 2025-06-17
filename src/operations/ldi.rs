@@ -1,7 +1,6 @@
 use crate::{
     VMState,
     error::VMError,
-    mem_read,
     operations::utils::{sign_extend, update_flags},
     registers::Register,
 };
@@ -9,8 +8,8 @@ pub fn handle_ldi(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);
     let first_addr = vm.registers[Register::PC.usize()].wrapping_add(pc_offset);
-    let final_addr = mem_read(first_addr, vm)?;
-    vm.registers[dest_reg] = mem_read(final_addr, vm)?;
+    let final_addr = vm.mem_read(first_addr)?;
+    vm.registers[dest_reg] = vm.mem_read(final_addr)?;
     update_flags(vm, vm.registers[dest_reg])?;
     Ok(())
 }
