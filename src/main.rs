@@ -1,5 +1,5 @@
 use std::fs::{self};
-use std::io::Read;
+use std::io::{Read, Write};
 
 use termion::raw::IntoRawMode;
 
@@ -50,8 +50,8 @@ impl VMState {
 
 fn main() -> Result<(), VMError> {
     // Fill memory with instructions here
-    let example_file = read_file("./binary-examples/rogue.obj")?;
-    let mut _stdout = std::io::stdout().into_raw_mode().unwrap();
+    let example_file = read_file("./binary-examples/2048.obj")?;
+    let mut stdout = std::io::stdout().into_raw_mode().unwrap();
     // Initialize VM state
     let mut vm = VMState::init()?;
 
@@ -83,8 +83,8 @@ fn main() -> Result<(), VMError> {
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
+        stdout.flush();
     }
-
     Ok(())
 }
 
