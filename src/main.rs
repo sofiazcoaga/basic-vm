@@ -83,7 +83,7 @@ fn main() -> Result<(), VMError> {
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
-        stdout.flush();
+        stdout.flush().map_err(|e| VMError::ErrorFlushingStdout(e.to_string()))?;
     }
     Ok(())
 }
