@@ -1,4 +1,5 @@
 use std::fs::{self};
+use std::io::Read;
 
 use crate::error::VMError;
 
@@ -20,6 +21,7 @@ use crate::operations::st::handle_st;
 use crate::operations::sti::handle_sti;
 use crate::operations::str::handle_str;
 use crate::operations::trap::handle_trap;
+use crate::registers::MemoryRegister;
 use crate::registers::Register::{self, *};
 
 mod flags;
@@ -57,7 +59,7 @@ fn main() -> Result<(), VMError> {
 
     while running {
         // Get the next instruction
-        let ix: u16 = mem_read(vm.registers[PC.usize()], &vm);
+        let ix: u16 = mem_read(vm.registers[PC.usize()], &mut vm)?;
         vm.registers[PC.usize()] += 1;
         let opcode = Opcode::try_from(ix >> 12)?;
 
@@ -84,8 +86,26 @@ fn main() -> Result<(), VMError> {
     Ok(())
 }
 
-fn mem_read(address: u16, vm: &VMState) -> u16 {
-    vm.memory[address as usize]
+fn mem_read(address: u16, vm: &mut VMState) -> Result<u16, VMError> {
+    if address == MemoryRegister::KBSR.try_into()? {
+        let char = get_char()?;
+        if char != 0 {
+            vm.memory[MemoryRegister::KBSR.usize()] = 1 << 15;
+            vm.memory[MemoryRegister::KBDR.usize()] = char;
+        } else {
+            vm.memory[MemoryRegister::KBSR.usize()] = 0;
+        }
+    }
+    Ok(vm.memory[address as usize])
+}
+
+fn get_char() -> Result<u16, VMError> {
+    let mut buffer: [u8;1] = [0];
+    std::io::stdin()
+        .read_exact(&mut buffer)
+        .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
+    let char = buffer[0] as u16;
+    Ok(char)
 }
 
 fn mem_write(address: u16, val: u16, vm: &mut VMState) {

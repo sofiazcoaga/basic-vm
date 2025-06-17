@@ -69,7 +69,7 @@ fn handle_out(vm: &mut VMState) -> Result<(), VMError> {
 
 fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
-    let mut content = mem_read(memory_address, vm);
+    let mut content = mem_read(memory_address, vm)?;
     while content != 0 {
         let bytes: [u8; 2] = content.to_le_bytes();
         print_char(bytes[0]);
@@ -77,7 +77,7 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
             print_char(bytes[1]);
         }
         memory_address = memory_address.wrapping_add(1);
-        content = mem_read(memory_address, vm);
+        content = mem_read(memory_address, vm)?;
     }
     Ok(())
 }
@@ -95,11 +95,11 @@ fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
 
 fn handle_puts(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
-    let mut content = mem_read(memory_address, vm);
+    let mut content = mem_read(memory_address, vm)?;
     while content != 0 {
         print_char(content.to_le_bytes()[0]);
         memory_address = memory_address.wrapping_add(1);
-        content = mem_read(memory_address, vm);
+        content = mem_read(memory_address, vm)?;
     }
     Ok(())
 }
