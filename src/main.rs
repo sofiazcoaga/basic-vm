@@ -1,6 +1,8 @@
 use std::fs::{self};
 use std::io::Read;
 
+use termion::raw::IntoRawMode;
+
 use crate::error::VMError;
 
 mod error;
@@ -48,8 +50,8 @@ impl VMState {
 
 fn main() -> Result<(), VMError> {
     // Fill memory with instructions here
-    let example_file = read_file("./binary-examples/2048.obj")?;
-
+    let example_file = read_file("./binary-examples/rogue.obj")?;
+    let mut _stdout = std::io::stdout().into_raw_mode().unwrap();
     // Initialize VM state
     let mut vm = VMState::init()?;
 
@@ -124,6 +126,7 @@ fn write_ixs_to_mem(parsed_file: Vec<u8>, vm: &mut VMState) {
 
     let mut offset = origin;
     while file_index + 1 < parsed_file.len() {
+        // LC3 binaries come in big endian 
         let content = u16::from_be_bytes([parsed_file[file_index], parsed_file[file_index + 1]]);
         mem_write(offset, content, vm);
         file_index += 2;
@@ -154,6 +157,7 @@ mod test {
         ]
         .concat();
         write_ixs_to_mem(binary, &mut vm);
+<<<<<<< HEAD
         assert_eq!(
             vm.memory[origin as usize],
             first_ix
@@ -162,5 +166,9 @@ mod test {
             vm.memory[(origin + 1) as usize],
             second_ix
         );
+=======
+        assert_eq!(vm.memory[origin as usize], first_ix);
+        assert_eq!(vm.memory[(origin + 1) as usize], second_ix);
+>>>>>>> dev
     }
 }
