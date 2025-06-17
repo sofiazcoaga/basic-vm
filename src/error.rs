@@ -7,4 +7,5 @@ pub enum VMError {
     CouldNotReadFile(String),
     UnrecognizedOpcode,
     UnrecognizedTrapCode,
+    TermiosError(String),
 }

@@ -1,8 +1,9 @@
 use std::env;
 use std::fs::{self};
 use std::io::{Read, Write};
+use std::os::fd::AsRawFd;
 
-use termion::raw::IntoRawMode;
+use termios::{ECHO, ICANON, TCSANOW, Termios, tcsetattr};
 
 use crate::error::VMError;
 
@@ -57,7 +58,8 @@ fn main() -> Result<(), VMError> {
     let path = console_args[1].clone();
     // Fill memory with instructions here
     let file = read_file(&path)?;
-    let mut stdout = std::io::stdout().into_raw_mode().unwrap();
+
+    disable_input_buffering()?;
     // Initialize VM state
     let mut vm = VMState::init()?;
 
@@ -89,9 +91,17 @@ fn main() -> Result<(), VMError> {
             OpRES => println!("Opcode is RES"),
             OpRTI => println!("Opcode is RTI"),
         }
-        stdout.flush().map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?; 
+        std::io::stdout().flush().map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
     }
 
+    Ok(())
+}
+
+fn disable_input_buffering() -> Result<(), VMError> {
+    let fd = std::io::stdin().lock().as_raw_fd();
+    let mut termios = Termios::from_fd(fd).map_err(|e| VMError::TermiosError(e.to_string()))?;
+    termios.c_lflag &= !ICANON & !ECHO;
+    tcsetattr(fd, TCSANOW, &termios).unwrap();
     Ok(())
 }
 
@@ -114,6 +124,7 @@ fn get_char() -> Result<u16, VMError> {
         .read_exact(&mut buffer)
         .map_err(|e| VMError::CouldNotReadChar(e.to_string()))?;
     let char = buffer[0] as u16;
+
     Ok(char)
 }
 
