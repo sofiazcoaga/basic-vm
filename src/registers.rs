@@ -21,8 +21,8 @@ impl Register {
     }
 }
 pub enum MemoryRegister {
-    Kbsr = 0xFE00, /* keyboard status */
-    Kbdr = 0xFE02, /* keyboard data */
+    Kbsr = 0xFE00, // Keyboard status.
+    Kbdr = 0xFE02, // Keyboard data. 
 }
 
 impl TryInto<u16> for MemoryRegister {
