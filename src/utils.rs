@@ -24,7 +24,7 @@ pub fn disable_input_buffering() -> Result<Termios, VMError> {
     let mut termios = Termios::from_fd(fd).map_err(|e| VMError::TermiosError(e.to_string()))?;
     let original_setup = termios;
     termios.c_lflag &= !ICANON & !ECHO;
-    tcsetattr(fd, TCSANOW, &termios).unwrap();
+    tcsetattr(fd, TCSANOW, &termios).map_err(|e| VMError::TermiosError(e.to_string()))?;
     Ok(original_setup)
 }
 
