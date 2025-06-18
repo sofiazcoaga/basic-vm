@@ -1,3 +1,5 @@
+use std::ops::{Index, IndexMut};
+
 use crate::error::VMError;
 
 #[allow(dead_code)]
@@ -16,12 +18,20 @@ pub enum Register {
 }
 impl Register {
     pub const COUNT: usize = 10;
+}
 
-    pub fn usize(self) -> usize {
-        self as usize
+impl<T> IndexMut<Register> for [T] {
+    fn index_mut(&mut self, index: Register) -> &mut Self::Output {
+        &mut self[index as usize]
     }
 }
 
+impl<T> Index<Register> for [T] {
+    type Output = T;
+    fn index(&self, index: Register) -> &Self::Output {
+        &self[index as usize]
+    }
+}
 /// The representation of the memory registers related to
 /// keyboard status.
 pub enum MemoryRegister {
@@ -38,8 +48,15 @@ impl TryInto<u16> for MemoryRegister {
     }
 }
 
-impl MemoryRegister {
-    pub fn usize(self) -> usize {
-        self as usize
+impl<T> IndexMut<MemoryRegister> for [T] {
+    fn index_mut(&mut self, index: MemoryRegister) -> &mut Self::Output {
+        &mut self[index as usize]
+    }
+}
+
+impl<T> Index<MemoryRegister> for [T] {
+    type Output = T;
+    fn index(&self, index: MemoryRegister) -> &Self::Output {
+        &self[index as usize]
     }
 }

@@ -42,7 +42,7 @@ mod test {
         // AND  R5  R6  IMM 3
         // 0101 101 110 1   00011
         let and_ix = 0x5BA3;
-        vm.registers[Register::R6.usize()] = 10;
+        vm.registers[Register::R6] = 10;
 
         let res = handle_and(and_ix, &mut vm);
         assert!(res.is_ok());
@@ -50,7 +50,7 @@ mod test {
         // 0000 0000 0000 1010
         // 0000 0000 0000 0011
         //  0    0    0   0010 = 2
-        assert_eq!(vm.registers[Register::R5.usize()], 2);
+        assert_eq!(vm.registers[Register::R5], 2);
     }
 
     #[test]
@@ -59,8 +59,8 @@ mod test {
         // AND  R0  R1  REG Unused R2
         // 0101 000 001 0   00     010
         let and_ix = 0x5042;
-        vm.registers[Register::R1.usize()] = 1234;
-        vm.registers[Register::R2.usize()] = 734;
+        vm.registers[Register::R1] = 1234;
+        vm.registers[Register::R2] = 734;
 
         let res = handle_and(and_ix, &mut vm);
         assert!(res.is_ok());
@@ -68,6 +68,6 @@ mod test {
         // 1234 0000 0100 1101 0010
         //  734 0000 0010 1101 1110
         // res  0000 0000 1101 0010 -> 210
-        assert_eq!(vm.registers[Register::R0.usize()], 210);
+        assert_eq!(vm.registers[Register::R0], 210);
     }
 }

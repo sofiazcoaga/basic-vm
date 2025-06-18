@@ -56,21 +56,21 @@ impl TryFrom<u16> for TrapCode {
 /// Gets a character from standard input and stores it in R0.
 fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
     let char = get_char()?;
-    vm.registers[Register::R0.usize()] = char;
+    vm.registers[Register::R0] = char;
     update_flags(vm, char)?;
     Ok(())
 }
 
 /// Prints the character stored in the first byte of R0.
 fn handle_out(vm: &mut VMState) -> Result<(), VMError> {
-    let char = vm.registers[Register::R0.usize()].to_le_bytes()[0];
+    let char = vm.registers[Register::R0].to_le_bytes()[0];
     print_char(char);
     Ok(())
 }
 
 /// Prints two characters per memory address, one per each byte.
 fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
-    let mut memory_address = vm.registers[Register::R0.usize()];
+    let mut memory_address = vm.registers[Register::R0];
     let mut content = vm.mem_read(memory_address)?;
     while content != 0 {
         let bytes: [u8; 2] = content.to_le_bytes();
@@ -88,7 +88,7 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
 fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
     print!("\n\rEnter a character: \n\r");
     let char = get_char()?;
-    vm.registers[Register::R0.usize()] = char;
+    vm.registers[Register::R0] = char;
     print!("{}", char as u8 as char);
     update_flags(vm, char)?;
     Ok(())
@@ -96,7 +96,7 @@ fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
 
 /// Prints one char per memory address.
 fn handle_puts(vm: &mut VMState) -> Result<(), VMError> {
-    let mut memory_address = vm.registers[Register::R0.usize()];
+    let mut memory_address = vm.registers[Register::R0];
     let mut content = vm.mem_read(memory_address)?;
     while content != 0 {
         print_char(content.to_le_bytes()[0]);

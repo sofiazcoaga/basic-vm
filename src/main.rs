@@ -57,9 +57,9 @@ fn main() -> Result<(), VMError> {
     // Execution loop.
     while running {
         // Get the next instruction from memory - its address is stored in the PC register.
-        let ix: u16 = vm.mem_read(vm.registers[PC.usize()])?;
+        let ix: u16 = vm.mem_read(vm.registers[PC])?;
         // Update the Program Counter to store the next ix address.
-        vm.registers[PC.usize()] += 1;
+        vm.registers[PC] += 1;
         // Decode instruction opcode.
         let opcode = Opcode::try_from(ix >> 12)?;
 

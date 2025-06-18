@@ -28,16 +28,16 @@ mod test {
         let content_base_reg: u16 = 0x3020; // Base Reg contains random memory address.
         let offset: u16 = 0x0004; //offset that will be used in ix.
         let random_memory_content: u16 = 400;
-        vm.registers[Register::R2.usize()] = content_base_reg;
+        vm.registers[Register::R2] = content_base_reg;
         vm.mem_write(content_base_reg.wrapping_add(offset), random_memory_content);
         // LDR  DestReg BaseReg Offset
         // 0110 001     010     000100
         let ldr_ix = 0x6284;
-        assert_eq!(vm.registers[Register::R1.usize()], 0); // R1 is currently empty
-        assert_eq!(vm.registers[Register::R2.usize()], content_base_reg); // R2 contains a memory address
+        assert_eq!(vm.registers[Register::R1], 0); // R1 is currently empty
+        assert_eq!(vm.registers[Register::R2], content_base_reg); // R2 contains a memory address
 
         let res = handle_ldr(ldr_ix, &mut vm);
         assert!(res.is_ok());
-        assert_eq!(vm.registers[Register::R1.usize()], random_memory_content);
+        assert_eq!(vm.registers[Register::R1], random_memory_content);
     }
 }

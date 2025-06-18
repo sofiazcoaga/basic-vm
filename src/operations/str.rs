@@ -27,8 +27,8 @@ mod test {
         let random_memory_addr = 0x4000;
         let random_content = 0x1234;
         let offset = 0x0002;
-        vm.registers[Register::R3.usize()] = random_memory_addr;
-        vm.registers[Register::R1.usize()] = random_content;
+        vm.registers[Register::R3] = random_memory_addr;
+        vm.registers[Register::R1] = random_content;
         let calculated_address = (random_memory_addr + offset) as usize;
 
         assert_eq!(vm.memory[calculated_address], 0); // Still has nothing up to this point.

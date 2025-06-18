@@ -23,11 +23,11 @@ mod test {
         // NOT  R1  R1  FILL
         // 1001 001 001 111111
         let not_ix = 0x927F;
-        vm.registers[Register::R1.usize()] = 0;
+        vm.registers[Register::R1] = 0;
         let res = handle_not(not_ix, &mut vm);
         assert!(res.is_ok());
         //  0 - 0000 0000 0000 0000
         // !0 - 1111 1111 1111 1111 - MAX VALUE 2^16 - 1 = 65.535
-        assert_eq!(vm.registers[Register::R1.usize()], 65535);
+        assert_eq!(vm.registers[Register::R1], 65535);
     }
 }

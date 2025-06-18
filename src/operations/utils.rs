@@ -13,7 +13,7 @@ pub fn sign_extend(mut number: u16, bit_count: usize) -> u16 {
 /// Updates the condition register in the VMState based on whether the last
 /// updated register value is negative, positive or zero.
 pub fn update_flags(vm: &mut VMState, register_value: u16) -> Result<(), VMError> {
-    let cond_register = &mut vm.registers[Register::Cond.usize()];
+    let cond_register = &mut vm.registers[Register::Cond];
     if register_value == 0 {
         *cond_register = Flag::Zro.try_into()?;
     } else if (register_value >> 15) > 0 {

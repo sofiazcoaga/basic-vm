@@ -13,7 +13,7 @@ use crate::{
 pub fn handle_ldi(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);
-    let first_addr = vm.registers[Register::PC.usize()].wrapping_add(pc_offset);
+    let first_addr = vm.registers[Register::PC].wrapping_add(pc_offset);
     let final_addr = vm.mem_read(first_addr)?;
     vm.registers[dest_reg] = vm.mem_read(final_addr)?;
     update_flags(vm, vm.registers[dest_reg])?;
@@ -36,13 +36,13 @@ mod test {
         vm.memory[first_addr as usize] = content_addr;
         vm.memory[content_addr as usize] = random_content;
 
-        assert_eq!(vm.registers[Register::PC.usize()], pc_content);
-        assert_eq!(vm.registers[Register::R1.usize()], 0); // Still has nothing
+        assert_eq!(vm.registers[Register::PC], pc_content);
+        assert_eq!(vm.registers[Register::R1], 0); // Still has nothing
         // LDI  DestReg PCOffset
         // 1010 001     011111111
         let ldi_ix = 0xA2FF;
         let res = handle_ldi(ldi_ix, &mut vm);
         assert!(res.is_ok());
-        assert_eq!(vm.registers[Register::R1.usize()], random_content);
+        assert_eq!(vm.registers[Register::R1], random_content);
     }
 }

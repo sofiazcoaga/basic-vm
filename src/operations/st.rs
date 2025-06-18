@@ -9,7 +9,7 @@ pub fn handle_st(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let src_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);
     vm.mem_write(
-        vm.registers[Register::PC.usize()].wrapping_add(pc_offset),
+        vm.registers[Register::PC].wrapping_add(pc_offset),
         vm.registers[src_reg],
     );
     Ok(())
@@ -26,7 +26,7 @@ mod test {
         let random_content = 1234;
         vm.registers[src_reg] = random_content; // Add some random content to register R3
         let pc_offset = 10;
-        let pc_content = vm.registers[Register::PC.usize()];
+        let pc_content = vm.registers[Register::PC];
 
         // ST   src_reg pc_offset
         // 0011 011     000001010

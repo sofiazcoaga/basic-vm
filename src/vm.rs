@@ -25,8 +25,8 @@ impl VMState {
             memory: [0; MEMORY_MAX],
             registers: [0; Register::COUNT],
         };
-        vm.registers[Register::Cond.usize()] = Flag::Zro.try_into()?;
-        vm.registers[Register::PC.usize()] = 0x3000; // Set PC to starting position. 0x3000 is the default.
+        vm.registers[Register::Cond] = Flag::Zro.try_into()?;
+        vm.registers[Register::PC] = 0x3000; // Set PC to starting position. 0x3000 is the default.
         Ok(vm)
     }
 
@@ -65,10 +65,10 @@ impl VMState {
         if address == MemoryRegister::Kbsr.try_into()? {
             let char = get_char()?;
             if char != 0 {
-                self.memory[MemoryRegister::Kbsr.usize()] = 1 << 15;
-                self.memory[MemoryRegister::Kbdr.usize()] = char;
+                self.memory[MemoryRegister::Kbsr] = 1 << 15;
+                self.memory[MemoryRegister::Kbdr] = char;
             } else {
-                self.memory[MemoryRegister::Kbsr.usize()] = 0;
+                self.memory[MemoryRegister::Kbsr] = 0;
             }
         }
         Ok(self.memory[address as usize])
