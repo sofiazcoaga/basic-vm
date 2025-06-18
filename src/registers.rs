@@ -25,8 +25,10 @@ impl Register {
 /// The representation of the memory registers related to
 /// keyboard status.
 pub enum MemoryRegister {
-    Kbsr = 0xFE00, // Keyboard status.
-    Kbdr = 0xFE02, // Keyboard data.
+    /// Keyboard status.
+    Kbsr = 0xFE00,
+    /// Keyboard data.
+    Kbdr = 0xFE02,
 }
 
 impl TryInto<u16> for MemoryRegister {
