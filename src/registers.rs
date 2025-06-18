@@ -1,7 +1,6 @@
 use crate::error::VMError;
 
 #[allow(dead_code)]
-
 /// The enumerated representation for the registers in the VM.
 pub enum Register {
     R0 = 0,

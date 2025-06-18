@@ -4,7 +4,7 @@ use crate::{VMState, error::VMError, operations::utils::sign_extend, registers::
 /// jump to a subroutine, storing the previous context first (to come back when the subroutine
 /// has finished). It allows two modes:
 /// - without register (JSR): the address of the first instruction of the subroutine is obtained by calculating
-/// the addition of the current content of the PC and the offset in the instruction.
+///   the addition of the current content of the PC and the offset in the instruction.
 /// - with register (JSRR): the address of the first instruction of the subroutine is inside the base register.
 // JSR:
 //         | JSR opcode (0100) | no reg flag (1) | PC offset |
@@ -12,7 +12,6 @@ use crate::{VMState, error::VMError, operations::utils::sign_extend, registers::
 // JSRR:
 //         | JSR opcode (0100) | no reg flag (0) | unused | base reg | unused |
 //         |   4 bits          | 1 bit           | 2 bits | 3 bits   | 6 bits |
-
 pub fn handle_jsr(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     // See if next ix address will be obtained from a register or an offset
     let without_reg_flag = ((instruction >> 11) & 1) > 0;
