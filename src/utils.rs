@@ -30,7 +30,7 @@ pub fn disable_input_buffering() -> Result<Termios, VMError> {
 
 pub fn restore_terminal(termios: Termios) -> Result<(), VMError> {
     let fd = std::io::stdin().lock().as_raw_fd();
-    tcsetattr(fd, TCSANOW, &termios).unwrap();
+    tcsetattr(fd, TCSANOW, &termios).map_err(|e| VMError::TermiosError(e.to_string()))?;
     Ok(())
 }
 
