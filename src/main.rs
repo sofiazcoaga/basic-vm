@@ -26,7 +26,7 @@ use crate::operations::sti::handle_sti;
 use crate::operations::str::handle_str;
 use crate::operations::trap::handle_trap;
 use crate::registers::Register::*;
-use crate::utils::{disable_input_buffering, read_file};
+use crate::utils::{disable_input_buffering, read_file, restore_terminal};
 use crate::vm::VMState;
 
 fn main() -> Result<(), VMError> {
@@ -37,7 +37,7 @@ fn main() -> Result<(), VMError> {
     let path = console_args[1].clone();
     let file = read_file(&path)?;
 
-    disable_input_buffering()?;
+    let original_terminal_setup = disable_input_buffering()?;
     // Initialize VM state
     let mut vm = VMState::init()?;
 
@@ -74,5 +74,6 @@ fn main() -> Result<(), VMError> {
             .map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
     }
 
+    restore_terminal(original_terminal_setup)?;
     Ok(())
 }
