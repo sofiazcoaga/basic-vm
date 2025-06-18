@@ -10,7 +10,7 @@ pub fn sign_extend(mut number: u16, bit_count: usize) -> u16 {
     number
 }
 
-/// Updates the condition regiter in the VMState based on whether the lastly
+/// Updates the condition register in the VMState based on whether the last
 /// updated register value is negative, positive or zero.
 pub fn update_flags(vm: &mut VMState, register_value: u16) -> Result<(), VMError> {
     let cond_register = &mut vm.registers[Register::Cond.usize()];
