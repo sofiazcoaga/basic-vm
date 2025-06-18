@@ -1,21 +1,22 @@
 use crate::error::VMError;
 
+/// The enumerated representation for the instructions opcodes.
 pub enum Opcode {
-    OpBR = 0,   // Branch
-    OpADD = 1,  // Add
-    OpLD = 2,   // Load
-    OpST = 3,   // Store
-    OpJSR = 4,  // Jump register
-    OpAND = 5,  // Bitwise and
-    OpLDR = 6,  // Load register
-    OpSTR = 7,  // Store register
-    OpRTI = 8,  // Unused
-    OpNOT = 9,  // Bitwise not
-    OpLDI = 10, // Load indirect
-    OpSTI = 11, // Store indirect
-    OpJMP = 12, // Jump
-    OpRES = 13, // Reserved (unused)
-    OpLEA = 14, // Load effective address
+    OpBR = 0,    // Branch
+    OpADD = 1,   // Add
+    OpLD = 2,    // Load
+    OpST = 3,    // Store
+    OpJSR = 4,   // Jump register
+    OpAND = 5,   // Bitwise and
+    OpLDR = 6,   // Load register
+    OpSTR = 7,   // Store register
+    OpRTI = 8,   // Unused
+    OpNOT = 9,   // Bitwise not
+    OpLDI = 10,  // Load indirect
+    OpSTI = 11,  // Store indirect
+    OpJMP = 12,  // Jump
+    OpRES = 13,  // Reserved (unused)
+    OpLEA = 14,  // Load effective address
     OpTRAP = 15, // I/O
 }
 

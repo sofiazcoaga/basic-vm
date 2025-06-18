@@ -89,7 +89,7 @@ fn main() -> Result<(), VMError> {
             .map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
     }
 
-    // When the program is finished, restore terminal to its original configuration. 
+    // When the program is finished, restore terminal to its original configuration.
     restore_terminal(original_terminal_setup)?;
     Ok(())
 }

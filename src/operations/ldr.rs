@@ -3,6 +3,12 @@ use crate::{
     error::VMError,
     operations::utils::{sign_extend, update_flags},
 };
+
+/// Handler for instruction LOAD FROM REGISTER. A memory address gets calculated from the
+/// content of the base register plus the offset. The content of this calculated memory address
+/// gets stored in the destination register.
+//         | LDR opcode (0110) | destination reg | base reg | offset |
+//         |   4 bits          |     3 bits      |   3 bits | 6 bits |
 pub fn handle_ldr(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let base_reg = ((instruction >> 6) & 0x7) as usize;

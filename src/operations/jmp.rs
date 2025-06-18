@@ -1,4 +1,9 @@
 use crate::{VMState, error::VMError, registers::Register};
+
+/// Handler for instruction JUMP, that makes the program unconditionally jump to the location specified in the
+/// base register, by storing it in the PC.
+//         | JMP opcode (1100) | unused | base reg | unused |
+//         |   4 bits          | 3 bits | 3 bits   | 6 bits |
 pub fn handle_jmp(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let base_reg = ((instruction >> 6) & 0x7) as usize;
     vm.registers[Register::PC.usize()] = vm.registers[base_reg];

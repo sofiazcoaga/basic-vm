@@ -4,6 +4,12 @@ use crate::{
     operations::utils::{sign_extend, update_flags},
     registers::Register,
 };
+
+/// Handler for instruction LOAD EFFECTIVE ADDRESS. An memory address gets calculated from the addition
+/// of the content of the PC and the offset given by the instruction. This memory address gets loaded
+/// into the destination register.
+//         | LEA opcode (1110) | destination reg | PC offset |
+//         |   4 bits          |     3 bits      |   9 bits  |
 pub fn handle_lea(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);

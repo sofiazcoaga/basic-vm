@@ -1,5 +1,9 @@
 use crate::{VMState, error::VMError, operations::utils::update_flags};
 
+/// Handler for instruction NOT. Performs the _bitwise not_ of the content in the source register and
+/// stores its result in the destination register.
+//         | NOT opcode (1001) | destination reg | source reg | unused |
+//         |   4 bits          |     3 bits      |   3 bits   | 6 bits |
 pub fn handle_not(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let src_reg = ((instruction >> 6) & 0x7) as usize;
