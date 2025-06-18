@@ -92,7 +92,7 @@ impl VMState {
         Ok(self.memory[address as usize])
     }
 
-    /// Runs the virtual machine and executes instruction loop. 
+    /// Runs the virtual machine and executes instruction loop.
     pub fn run(&mut self, file_vec: Vec<u8>) -> Result<(), VMError> {
         // We disable input buffering (keys will be detected as soon as they are pressed and they will not be echoed).
         // We store the original terminal configuration to restore it when the program finishes.

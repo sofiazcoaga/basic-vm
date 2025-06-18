@@ -47,7 +47,7 @@ impl TryFrom<u16> for TrapCode {
             0x24 => TrapCode::PutSp,
             0x25 => TrapCode::Halt,
 
-            _ => return Err(VMError::UnrecognizedTrapCode),
+            _ => return Err(VMError::UnrecognizedTrapCode(value)),
         };
         Ok(result)
     }

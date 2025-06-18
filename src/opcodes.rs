@@ -47,7 +47,7 @@ impl TryFrom<u16> for Opcode {
             13 => Opcode::OpRES,
             14 => Opcode::OpLEA,
             15 => Opcode::OpTRAP,
-            _ => return Err(VMError::UnrecognizedOpcode),
+            _ => return Err(VMError::UnrecognizedOpcode(value)),
         };
         Ok(result)
     }
