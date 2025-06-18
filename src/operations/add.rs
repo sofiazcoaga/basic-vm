@@ -46,17 +46,11 @@ mod test {
         vm.registers[Register::R1] = 30;
         vm.registers[Register::R2] = 25;
         assert_eq!(vm.registers[Register::R0], 0);
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Zro.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Zro.try_into().unwrap());
         let res = handle_add(add_ix, &mut vm);
         assert!(res.is_ok());
         assert_eq!(vm.registers[Register::R0], 55);
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Pos.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Pos.try_into().unwrap());
     }
 
     #[test]
@@ -68,18 +62,12 @@ mod test {
         vm.registers[Register::R2] = 65516;
 
         assert_eq!(vm.registers[Register::R0], 0);
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Zro.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Zro.try_into().unwrap());
         let res = handle_add(add_ix, &mut vm);
         assert!(res.is_ok());
         // The result of 30 + (-20)
         assert_eq!(vm.registers[Register::R0], 10);
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Pos.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Pos.try_into().unwrap());
     }
 
     #[test]
@@ -90,19 +78,13 @@ mod test {
         // The complement of -150
         vm.registers[Register::R2] = 65386;
         assert_eq!(vm.registers[Register::R0], 0);
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Zro.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Zro.try_into().unwrap());
         let res = handle_add(add_ix, &mut vm);
         assert!(res.is_ok());
         // The complement of -120 which is the result of 30 + (-150)
         assert_eq!(vm.registers[Register::R0], 65416);
         // The flag indicates value stored is negative
-        assert_eq!(
-            vm.registers[Register::Cond],
-            Flag::Neg.try_into().unwrap()
-        );
+        assert_eq!(vm.registers[Register::Cond], Flag::Neg.try_into().unwrap());
     }
 
     #[test]

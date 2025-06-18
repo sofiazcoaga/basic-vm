@@ -21,8 +21,7 @@ pub fn handle_jsr(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     if without_reg_flag {
         // Next ix address is obtained from adding offset to current PC. - JSR
         let pc_offset = sign_extend(instruction & 0x7FF, 11);
-        vm.registers[Register::PC] =
-            vm.registers[Register::PC].wrapping_add(pc_offset);
+        vm.registers[Register::PC] = vm.registers[Register::PC].wrapping_add(pc_offset);
     } else {
         // Next ix address is obtained from a specific register - JSRR
         let base_reg = ((instruction >> 6) & 0x7) as usize;

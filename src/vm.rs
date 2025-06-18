@@ -1,8 +1,26 @@
+use std::io::Write;
+
+use crate::opcodes::Opcode::{self, *};
+use crate::operations::add::handle_add;
+use crate::operations::and::handle_and;
+use crate::operations::br::handle_br;
+use crate::operations::jmp::handle_jmp;
+use crate::operations::jsr::handle_jsr;
+use crate::operations::ld::handle_ld;
+use crate::operations::ldi::handle_ldi;
+use crate::operations::ldr::handle_ldr;
+use crate::operations::lea::handle_lea;
+use crate::operations::not::handle_not;
+use crate::operations::st::handle_st;
+use crate::operations::sti::handle_sti;
+use crate::operations::str::handle_str;
+use crate::operations::trap::handle_trap;
+use crate::registers::Register::*;
 use crate::{
     error::VMError,
     flags::Flag,
     registers::{MemoryRegister, Register},
-    utils::get_char,
+    utils::{disable_input_buffering, get_char, restore_terminal},
 };
 
 /// Memory size for LC-3 architecture, where each memory position stores a 16 bit value. [See more here.](https://www.jmeiners.com/lc3-vm/#lc-3-architecture)
@@ -72,6 +90,58 @@ impl VMState {
             }
         }
         Ok(self.memory[address as usize])
+    }
+
+    /// Runs the virtual machine and executes instruction loop. 
+    pub fn run(&mut self, file_vec: Vec<u8>) -> Result<(), VMError> {
+        // We disable input buffering (keys will be detected as soon as they are pressed and they will not be echoed).
+        // We store the original terminal configuration to restore it when the program finishes.
+        let original_terminal_setup = disable_input_buffering()?;
+
+        // Write the obtained instructions from the file into VM's memory
+        self.write_ixs_to_mem(file_vec);
+
+        // Set the running flag to true - only HALT instruction will set it to false and stop the execution loop.
+        let mut running = true;
+
+        // Execution loop.
+        while running {
+            // Get the next instruction from memory - its address is stored in the PC register.
+            let ix: u16 = self.mem_read(self.registers[PC])?;
+            // Update the Program Counter to store the next ix address.
+            self.registers[PC] += 1;
+            // Decode instruction opcode.
+            let opcode = Opcode::try_from(ix >> 12)?;
+
+            // Handle opcode.
+            match opcode {
+                OpADD => handle_add(ix, self)?,
+                OpAND => handle_and(ix, self)?,
+                OpNOT => handle_not(ix, self)?,
+                OpBR => handle_br(ix, self)?,
+                OpJMP => handle_jmp(ix, self)?,
+                OpJSR => handle_jsr(ix, self)?,
+                OpLD => handle_ld(ix, self)?,
+                OpLDI => handle_ldi(ix, self)?,
+                OpLDR => handle_ldr(ix, self)?,
+                OpLEA => handle_lea(ix, self)?,
+                OpST => handle_st(ix, self)?,
+                OpSTI => handle_sti(ix, self)?,
+                OpSTR => handle_str(ix, self)?,
+                OpTRAP => handle_trap(ix, self, &mut running)?,
+                OpRES => println!("Opcode is RES"), // Unused
+                OpRTI => println!("Opcode is RTI"), // Unused
+            }
+
+            // If operation was I/O force output to be delivered right away.
+            std::io::stdout()
+                .flush()
+                .map_err(|e| VMError::ErrorFlushinStdout(e.to_string()))?;
+        }
+
+        // When the program is finished, restore terminal to its original configuration.
+        restore_terminal(original_terminal_setup)?;
+        Ok(())
     }
 }
 
