@@ -1,5 +1,7 @@
 use crate::error::VMError;
-#[allow(dead_code)]
+
+/// This flags indicate if the last updated register value is positive,
+/// negative or zero.
 pub enum Flag {
     Pos = 1 << 0,
     Zro = 1 << 1,

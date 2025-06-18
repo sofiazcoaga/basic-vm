@@ -4,6 +4,12 @@ use crate::{
     operations::utils::{sign_extend, update_flags},
     registers::Register,
 };
+
+/// Handler for instruction LOAD, that loads the content of a calculated memory address
+/// into the destination register. The calculated address is obtained by adding the PC offset
+/// to the current PC content.
+//         | LD opcode (0010) | destination reg | PC offset |
+//         |   4 bits         |     3 bits      |   9 bits  |
 pub fn handle_ld(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);

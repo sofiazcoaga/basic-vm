@@ -1,4 +1,11 @@
 use crate::{VMState, error::VMError, operations::utils::sign_extend, registers::Register};
+
+/// Handler for instruction BRANCH, that evaluates conditions set in `n` (condition register is negative),
+/// `z` (condition register is zero) and `p` (condition register is positive) and if they are met the program jumps
+/// to the instruction specified in the address calculated by the current program counter (PC) value plus the offset that comes
+/// in the instruction. More than one flag can be set to true (1) indicating that either of them is required.
+//         | BR opcode (0000) |  n  |  z  |  p  | PC offset |
+//         |   4 bits         |1 bit|1 bit|1 bit|   9 bits  |
 pub fn handle_br(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let pc_offset = sign_extend(instruction & 0x1FF, 9);
     let cond_flag = (instruction >> 9) & 0x7;

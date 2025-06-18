@@ -6,6 +6,15 @@ use crate::{
     operations::utils::{sign_extend, update_flags},
 };
 
+/// Handler for instruction AND, that performs _bitwise and_ of two numbers and stores the result in the destination register.
+/// AND supports two modes: immediate mode, where the second operand is given by the instruction itself, and register mode,
+/// where the second operand is obtained from a register.
+//     Immediate mode:
+//         | AND opcode (0101) | destination reg | 1st operand reg | imm flag (1) | 2nd operand |
+//         |   4 bits          |      3 bits     |    3 bits       | 1 bit        | 5 bits      |
+///     Register mode:
+///         | AND opcode (0101) | destination reg | 1st operand reg | imm flag (0) | unused | 2nd operand reg |
+///         |   4 bits          |      3 bits     |    3 bits       | 1 bit        | 2 bits |   3 bits        |
 pub fn handle_and(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let src_reg_1 = ((instruction >> 6) & 0x7) as usize;

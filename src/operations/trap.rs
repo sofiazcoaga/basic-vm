@@ -1,6 +1,11 @@
 use crate::{
     VMState, error::VMError, operations::utils::update_flags, registers::Register, utils::get_char,
 };
+
+/// Handler for instruction TRAP, that is related with I/O interactions. There are
+/// different types of traps that are executed differently.
+//         | TRAP opcode (1111)| unused | Trap Type |
+//         |   4 bits          | 4 bits | 8 bits    |
 pub fn handle_trap(instruction: u16, vm: &mut VMState, running: &mut bool) -> Result<(), VMError> {
     match TrapCode::try_from(instruction & 0xFF)? {
         TrapCode::Getc => handle_getc(vm)?,
@@ -16,12 +21,12 @@ pub fn handle_trap(instruction: u16, vm: &mut VMState, running: &mut bool) -> Re
     Ok(())
 }
 enum TrapCode {
-    Getc = 0x20,  /* get character from keyboard, not echoed onto the terminal */
-    Out = 0x21,   /* output a character */
-    Puts = 0x22,  /* output a word string */
-    In = 0x23,    /* get character from keyboard, echoed onto the terminal */
-    PutSp = 0x24, /* output a byte string */
-    Halt = 0x25,  /* halt the program */
+    Getc = 0x20,  // Get character from keyboard, not echoed onto the terminal.
+    Out = 0x21,   // Output a character.
+    Puts = 0x22,  // Output a word string.
+    In = 0x23,    // Get character from keyboard, echoed onto the terminal.
+    PutSp = 0x24, // Output a byte string.
+    Halt = 0x25,  // Halt the program.
 }
 
 impl TryInto<u16> for TrapCode {
@@ -48,6 +53,7 @@ impl TryFrom<u16> for TrapCode {
     }
 }
 
+/// Gets a character from standard input and stores it in R0.
 fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
     let char = get_char()?;
     vm.registers[Register::R0.usize()] = char;
@@ -55,12 +61,14 @@ fn handle_getc(vm: &mut VMState) -> Result<(), VMError> {
     Ok(())
 }
 
+/// Prints the character stored in the first byte of R0.
 fn handle_out(vm: &mut VMState) -> Result<(), VMError> {
     let char = vm.registers[Register::R0.usize()].to_le_bytes()[0];
     print_char(char);
     Ok(())
 }
 
+/// Prints two characters per memory address, one per each byte.
 fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
     let mut content = vm.mem_read(memory_address)?;
@@ -76,14 +84,17 @@ fn handle_putsp(vm: &mut VMState) -> Result<(), VMError> {
     Ok(())
 }
 
+/// Gets a character from standard input echoing it to terminal.
 fn handle_in(vm: &mut VMState) -> Result<(), VMError> {
     print!("\n\rEnter a character: \n\r");
     let char = get_char()?;
     vm.registers[Register::R0.usize()] = char;
+    print!("{}", char as u8 as char);
     update_flags(vm, char)?;
     Ok(())
 }
 
+/// Prints one char per memory address.
 fn handle_puts(vm: &mut VMState) -> Result<(), VMError> {
     let mut memory_address = vm.registers[Register::R0.usize()];
     let mut content = vm.mem_read(memory_address)?;

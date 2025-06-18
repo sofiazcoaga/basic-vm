@@ -1,4 +1,11 @@
 use crate::{VMState, error::VMError, operations::utils::sign_extend, registers::Register};
+
+/// Handler for instruction STORE INDIRECT. A first address is calculated by adding the current
+/// content of the PC and the offset given by the instruction. After that, a second address is
+/// obtained by getting the content stored in the first calculated address. This final address is
+/// the one where data in the source register will be stored.
+//         | STI opcode (1011)| source reg | PC offset |
+//         |   4 bits         |  3 bits    |   9 bits  |
 pub fn handle_sti(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let src_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);

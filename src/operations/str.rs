@@ -1,4 +1,10 @@
 use crate::{VMState, error::VMError, operations::utils::sign_extend};
+
+/// Handler for instruction STORE FROM REGISTER. A memory address is calculated from adding
+/// the content of the base register to the offset specified in the instruction. After this
+/// the content in the source register gets stored in the previously calculated address.
+//         | STR opcode (0111)| source reg | base reg | offset |
+//         |   4 bits         |  3 bits    |   3 bits | 6 bits |
 pub fn handle_str(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let src_reg = ((instruction >> 9) & 0x7) as usize;
     let base_reg = ((instruction >> 6) & 0x7) as usize;

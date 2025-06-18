@@ -1,4 +1,10 @@
 use crate::{VMState, error::VMError, operations::utils::sign_extend, registers::Register};
+
+/// Handler for instruction STORE. The content in the source register gets stored in
+/// the calculated address obtained by adding the PC offset given by the instruction to
+/// the current PC content.
+//         | ST opcode (0011) | source reg | PC offset |
+//         |   4 bits         |  3 bits    |   9 bits  |
 pub fn handle_st(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let src_reg = ((instruction >> 9) & 0x7) as usize;
     let pc_offset = sign_extend(instruction & 0x1FF, 9);

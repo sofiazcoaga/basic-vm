@@ -4,6 +4,15 @@ use crate::{
     operations::utils::{sign_extend, update_flags},
 };
 
+/// Handler for instruction ADD, that adds two numbers and stores the result in the destination register.
+/// ADD supports two modes: immediate mode, where the second addend is given by the instruction itself
+/// (useful to increase and decrease), and register mode, where the second addend is obtained from a register.
+//     Immediate mode:
+//         | ADD opcode (0001) | destination reg | first addend reg | imm flag (1) | second addend  |
+//         |   4 bits          |      3 bits     |    3 bits        | 1 bit        | 5 bits         |
+//     Register mode:
+//         | ADD opcode (0001) | destination reg | first addend reg | imm flag (0) | unused | second addend reg |
+//         |   4 bits          |      3 bits     |    3 bits        | 1 bit        | 2 bits |   3 bits          |
 pub fn handle_add(instruction: u16, vm: &mut VMState) -> Result<(), VMError> {
     let dest_reg = ((instruction >> 9) & 0x7) as usize;
     let src_reg_1 = ((instruction >> 6) & 0x7) as usize;

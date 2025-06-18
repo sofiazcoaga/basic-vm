@@ -1,6 +1,7 @@
 use crate::error::VMError;
 
 #[allow(dead_code)]
+/// The enumerated representation for the registers in the VM.
 pub enum Register {
     R0 = 0,
     R1 = 1,
@@ -20,9 +21,12 @@ impl Register {
         self as usize
     }
 }
+
+/// The representation of the memory registers related to
+/// keyboard status.
 pub enum MemoryRegister {
-    Kbsr = 0xFE00, /* keyboard status */
-    Kbdr = 0xFE02, /* keyboard data */
+    Kbsr = 0xFE00, // Keyboard status.
+    Kbdr = 0xFE02, // Keyboard data.
 }
 
 impl TryInto<u16> for MemoryRegister {
