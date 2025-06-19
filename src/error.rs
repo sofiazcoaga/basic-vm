@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 #[derive(Debug)]
 pub enum VMError {
     /// Wrapper for stdout.flush() errors. The original error is contained inside as a string.
